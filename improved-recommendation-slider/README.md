@@ -1,6 +1,6 @@
 # Improved Recommendation Slider
 
-A custom Clerk.io slider design with enhanced navigation and mobile experience.
+A custom Recommendation slider design with enhanced navigation and mobile experience.
 
 ## Features
 
