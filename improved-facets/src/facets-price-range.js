@@ -494,6 +494,22 @@ Clerk("on", "rendered", function() {
       }
     });
   });
+
+  // Resize handler - recalculate bubble positions when window is resized
+  if (!window.priceSliderResizeAttached) {
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (window.priceSliderInstance && window.priceSliderInstance.minSlider) {
+          const min = parseInt(window.priceSliderInstance.minSlider.value);
+          const max = parseInt(window.priceSliderInstance.maxSlider.value);
+          window.priceSliderInstance.applyBubblePositions(min, max);
+        }
+      }, 100);
+    });
+    window.priceSliderResizeAttached = true;
+  }
 });
 </script>
 
