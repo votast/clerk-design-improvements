@@ -2,13 +2,9 @@
 
 A collection of enhanced design components for Clerk.io Omnisearch and product recommendations.
 
-**Repository:** https://github.com/votast/clerk-design-improvements
 
----
 
-## Components
-
-### Improved Facets
+## Improved Facets
 
 Enhanced facet components for Clerk.io Omnisearch, including:
 
@@ -18,9 +14,7 @@ Enhanced facet components for Clerk.io Omnisearch, including:
 
 📖 [View Documentation](./improved-facets/README.md)
 
----
-
-### Improved Recommendation Slider
+## Improved Recommendation Slider
 
 Enhanced product recommendation slider with improved navigation and responsive design.
 
@@ -32,7 +26,7 @@ Enhanced product recommendation slider with improved navigation and responsive d
 
 ---
 
-## Repository Structure
+### Repository Structure
 
 ```
 clerk-design-improvements/
