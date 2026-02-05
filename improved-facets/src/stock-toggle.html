@@ -1,0 +1,14 @@
+{% if show_stock_toggle %}
+<div class="clerk-stock-toggle" 
+     data-enabled="{{ show_stock_toggle }}"
+     data-facet-name="{{ stock_facet_name }}"
+     data-value-instock="{{ stock_value_instock }}"
+     data-value-outofstock="{{ stock_value_outofstock }}"
+     data-label-instock="{{ stock_label_instock }}" 
+     data-label-outofstock="{{ stock_label_outofstock }}">
+  <label class="clerk-stock-toggle-label">
+    <span class="clerk-stock-toggle-switch"></span>
+  </label>
+  <span class="clerk-stock-toggle-status">{{ stock_label_instock }}</span>
+</div>
+{% endif %}

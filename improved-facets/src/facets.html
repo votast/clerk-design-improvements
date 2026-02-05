@@ -1,0 +1,88 @@
+{% for facet_group in facet_groups %}
+{% assign is_box_facet = false %}
+{% if facet_box_attributes contains facet_group.name %}
+  {% assign is_box_facet = true %}
+{% endif %}
+
+<div class="clerk-facet-group clerk-facet-{{ facet_group.name }}{% if is_box_facet %} clerk-facet-box-view{% endif %}" data-facet-group="{{ facet_group.name }}">
+  <div class="clerk-facet-group-title {% if is_desktop %}clerk-active{% endif %}" data-count="{{ facet_group.selected_count }}">
+    {{ facet_group.title }}
+    {% if facet_group.name != '_price_range' and facet_group.selected_count > 0 %}
+      <div class="os-facet-group-selected-count">{{ facet_group.selected_count }}</div>
+    {% endif %}
+  </div>
+  
+  <div class="clerk-facet-group-facets {% if is_desktop %}clerk-active{% endif %}">
+    {% if facet_group.name == '_price_range' and show_price_slider %}
+      <!-- Price Range Slider -->
+      <div class="price-range-container">
+        <div class="price-range-values">
+          <span id="minLabel"></span>
+          <span id="maxLabel"></span>
+        </div>
+        <div class="price-range-slider">
+          <div class="price-range-track" id="priceTrack"></div>
+          <input type="range" id="minPrice" class="price-range-input" step="1">
+          <input type="range" id="maxPrice" class="price-range-input" step="1">
+        </div>
+      </div>
+      <div class="price-range-ticks" id="priceTicks"></div>
+      
+      <!-- Hidden facets for Clerk integration -->
+      {% for facet in facet_group.facets %}
+        {% if facet.value != 'false' %}
+          <div class="clerk-facet clerk-facet-hidden {% if facet.selected %}clerk-facet-selected{% endif %}"
+               data-facet="{{ facet_group.name }}"
+               data-value="{{ facet.value }}"
+               data-min="{{ facet.min }}"
+               data-max="{{ facet.max }}">
+            <div style="display:none;" class="clerk-facet-name">
+              <span class="clerk-facet-name-flex">
+                <span class="clerk-facet-name-label">{{ facet.value }}</span>
+              </span>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% for facet in facet_group.facets %}
+        {% if facet.value != 'false' %}
+          {% assign facet_group_name = facet_group.name.replace(/[-_\/\.]/g, " ") %}
+          <div class="clerk-facet {% if facet.selected %}clerk-facet-selected{% endif %}" data-facet="{{ facet_group.name }}" data-value="{{ facet.value }}" data-min="{{ facet.min }}" data-max="{{ facet.max }}">
+            {% if hidden_categories contains facet.value %}
+            {% else %}
+              {% if facet_group.name == '_price_range' %} 
+                {% assign first_price = facet.value.split(' - ')[0] + ' ' + product_currency_symbol %} 
+                {% assign last_price = facet.value.split(' - ')[1] %} 
+                {% if last_price == '...' %} 
+                {% else %} 
+                  {% assign last_price = last_price + " " + product_currency_symbol %} 
+                {% endif %}
+                <div class="clerk-facet-name">
+                  <span class="clerk-facet-name-flex">
+                    <span class="clerk-facet-name-label">{{ first_price }} - {{ last_price }}</span>
+                  </span>
+                </div>
+              {% else %}
+                <div class="clerk-facet-name">
+                  <span class="clerk-facet-name-flex">
+                    <span class="clerk-facet-name-label">{{ facet.value }}</span>
+                  </span>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </div>
+  
+  {% if facet_group.facets.length >= 8 %}
+    {% if facet_group.name != '_price_range' or show_price_slider == false %}
+    <div class="clerk-facet-show-more-wrapper {% if is_desktop %}clerk-active{% endif %}">
+      <span class="clerk-facet-show-more" data-clerk-bind="click:show_more">{{ facets_show_more_label }}</span>
+    </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endfor %}

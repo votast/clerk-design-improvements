@@ -1,0 +1,100 @@
+{% comment %}
+===========================================
+SLIDER CONFIGURATION
+Change these values to adjust cards per row
+===========================================
+{% endcomment %}
+{% assign cards_desktop = 4 %}
+{% assign cards_tablet = 3 %}
+{% assign cards_mobile = 2 %}
+{% assign product_currency_symbol = " kr" %}
+
+{% if products.length > 7 %}
+<div class="irs-container" style="--irs-cards-desktop:{{ cards_desktop }};--irs-cards-tablet:{{ cards_tablet }};--irs-cards-mobile:{{ cards_mobile }};">
+    <!-- Slider Header -->
+    <div class="irs-header">
+        <h2 class="irs-title">{{ headline }}</h2>
+        {% if subtitle %}<p class="irs-subtitle">{{ subtitle }}</p>{% endif %}
+    </div>
+    
+    <!-- Slider Viewport (arrows + track) -->
+    <div class="irs-viewport">
+        <!-- Previous Arrow -->
+        <button type="button" class="irs-arrow irs-arrow-prev" onclick="if(!this.classList.contains('irs-arrow-disabled')){this.nextElementSibling.scrollBy({left:-this.nextElementSibling.offsetWidth/{{ cards_desktop }},behavior:'smooth'})}">
+            <svg viewBox="0 0 8 14"><path d="M7 1L1 7L7 13"/></svg>
+        </button>
+        
+        <!-- Product Track (scrollable) -->
+        <div class="irs-track">
+            {% for product in products %}
+            <div class="irs-card">
+                <!-- ========================================
+                     PRODUCT CARD START
+                     Replace everything below with custom card
+                     ======================================== -->
+                <article class="irs-card-content">
+                    <a href="{{ product.url }}" class="irs-card-image">
+                        <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                        {% if product.price < product.list_price %}
+                        <span class="irs-badge irs-badge-sale">-{{ product.price | pct product.list_price }}%</span>
+                        {% endif %}
+                    </a>
+                    <div class="irs-card-info">
+                        <h3 class="irs-card-name"><a href="{{ product.url }}">{{ product.name }}</a></h3>
+                        <div class="irs-card-price">
+                            {% if product.price < product.list_price %}
+                            <span class="irs-price-old">{{ product.list_price | money_eu 2 }}{{ product_currency_symbol }}</span>
+                            <span class="irs-price-sale">{{ product.price | money_eu 2 }}{{ product_currency_symbol }}</span>
+                            {% else %}
+                            <span class="irs-price-regular">{{ product.price | money_eu 2 }}{{ product_currency_symbol }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                <!-- ========================================
+                     PRODUCT CARD END
+                     ======================================== -->
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Next Arrow -->
+        <button type="button" class="irs-arrow irs-arrow-next" onclick="if(!this.classList.contains('irs-arrow-disabled')){this.previousElementSibling.scrollBy({left:this.previousElementSibling.offsetWidth/{{ cards_desktop }},behavior:'smooth'})}">
+            <svg viewBox="0 0 8 14"><path d="M1 1L7 7L1 13"/></svg>
+        </button>
+    </div>
+    
+    <!-- Mobile Progress Bar -->
+    <div class="irs-progress">
+        <div class="irs-progress-track">
+            <div class="irs-progress-thumb"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Slider JavaScript -->
+<script>
+(function(){
+    var c = document.querySelector('.irs-container:not([data-init])');
+    if (!c) return;
+    c.dataset.init = '1';
+    
+    var track = c.querySelector('.irs-track');
+    var thumb = c.querySelector('.irs-progress-thumb');
+    var prev = c.querySelector('.irs-arrow-prev');
+    var next = c.querySelector('.irs-arrow-next');
+    
+    function update() {
+        var sl = track.scrollLeft;
+        var max = track.scrollWidth - track.clientWidth;
+        if (prev) prev.classList.toggle('irs-arrow-disabled', sl < 5);
+        if (next) next.classList.toggle('irs-arrow-disabled', sl > max - 5);
+        if (thumb && max > 0) thumb.style.left = (sl / max * 75) + '%';
+    }
+    
+    track.addEventListener('scroll', update, {passive: true});
+    track.addEventListener('touchmove', update, {passive: true});
+    setTimeout(update, 100);
+})();
+</script>
+{% endif %}

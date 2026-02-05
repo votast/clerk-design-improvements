@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clerk.io Improved Facets - Installation Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-light: #eef2ff;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --border: #e5e7eb;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --bg-code: #1e1e1e;
+      --code-text: #d4d4d4;
+      --radius: 8px;
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      line-height: 1.6;
+    }
+
+    .header {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo { display: flex; align-items: center; gap: 0.75rem; }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .logo-text { font-weight: 700; font-size: 1.25rem; }
+
+    .header-links { display: flex; gap: 1.5rem; }
+    .header-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+    .header-links a:hover { color: var(--primary); }
+
+    .container {
+      max-width: 100%;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 1.5rem;
+    }
+
+    .sidebar { position: sticky; top: 80px; height: fit-content; }
+    .nav-section { margin-bottom: 1.5rem; }
+    .nav-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .nav-list { list-style: none; }
+    .nav-list a { display: block; padding: 0.5rem 0.75rem; color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; border-radius: 6px; }
+    .nav-list a:hover { background: var(--bg-primary); color: var(--text-primary); }
+    .nav-list a.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+
+    .content {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section { margin-bottom: 3rem; }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem; }
+    h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; }
+    p { margin-bottom: 1rem; color: var(--text-secondary); }
+
+    .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+    .feature-card h4 { font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .feature-card p { font-size: 0.875rem; margin-bottom: 0; }
+    .feature-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; }
+    .feature-icon.purple { background: var(--primary-light); color: var(--primary); }
+    .feature-icon.green { background: var(--success-light); color: var(--success); }
+    .feature-icon.yellow { background: var(--warning-light); color: var(--warning); }
+
+    .step { margin-bottom: 2rem; }
+    .step-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .step-number { width: 28px; height: 28px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600; }
+    .step-title { font-size: 1.125rem; font-weight: 600; }
+    .step-location { background: var(--primary-light); color: var(--primary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+
+    .code-block { position: relative; margin-bottom: 1.5rem; border-radius: var(--radius); overflow: hidden; }
+    .code-header { background: #2d2d2d; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #404040; }
+    .code-filename { color: var(--text-muted); font-size: 0.8125rem; font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 0.5rem; }
+    .copy-btn { background: transparent; border: 1px solid #404040; color: var(--text-muted); padding: 0.375rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.375rem; }
+    .copy-btn:hover { background: #404040; color: white; }
+    .copy-btn.copied { background: var(--success); border-color: var(--success); color: white; }
+    .code-content { background: var(--bg-code); padding: 1rem; overflow-x: auto; max-height: 500px; overflow-y: auto; }
+    .code-content pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; line-height: 1.6; color: var(--code-text); white-space: pre; }
+    .code-content .loading { color: var(--text-muted); font-style: italic; }
+    .code-content .error { color: #f87171; }
+
+    .config-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.875rem; }
+    .config-table th, .config-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .config-table th { background: var(--bg-secondary); font-weight: 600; }
+    .config-table td { color: var(--text-secondary); }
+    .config-table code { background: var(--bg-secondary); padding: 0.125rem 0.375rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; color: var(--primary); }
+
+    .badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+    .badge-string { background: #fef3c7; color: #92400e; }
+    .badge-number { background: #dbeafe; color: #1e40af; }
+    .badge-boolean { background: #f3e8ff; color: #7c3aed; }
+
+    .note { background: var(--primary-light); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0 var(--radius) var(--radius) 0; margin: 1.5rem 0; }
+    .note-title { font-weight: 600; color: var(--primary); margin-bottom: 0.25rem; font-size: 0.875rem; }
+    .note p { margin-bottom: 0; font-size: 0.875rem; }
+    .note.warning { background: var(--warning-light); border-left-color: var(--warning); }
+    .note.warning .note-title { color: #92400e; }
+
+    .file-tree { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; }
+    .file-tree ul { list-style: none; margin-left: 1.25rem; }
+    .file-tree > ul { margin-left: 0; }
+    .file-tree li { padding: 0.25rem 0; color: var(--text-secondary); }
+    .file-tree .folder { color: var(--primary); }
+
+    .footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.875rem; }
+    .footer a { color: var(--primary); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; padding: 1rem; }
+      .sidebar { display: none; }
+      .features { grid-template-columns: 1fr; }
+      .content { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">C</div>
+        <span class="logo-text">Clerk.io Improved Facets</span>
+      </div>
+      <div class="header-links">
+        <a href="https://docs.clerk.io" target="_blank">Clerk Docs</a>
+        <a href="https://help.clerk.io" target="_blank">Help Center</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-section">
+          <div class="nav-title">Getting Started</div>
+          <ul class="nav-list">
+            <li><a href="#overview" class="active">Overview</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#file-structure">File Structure</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">Installation</div>
+          <ul class="nav-list">
+            <li><a href="#step-1">Step 1: Configuration</a></li>
+            <li><a href="#step-2">Step 2: HTML Template</a></li>
+            <li><a href="#step-3">Step 3: CSS Styles</a></li>
+            <li><a href="#step-4">Step 4: JavaScript</a></li>
+            <li><a href="#step-5">Step 5: Price Range</a></li>
+            <li><a href="#step-6">Step 6: Stock Toggle</a></li>
+          </ul>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">Reference</div>
+          <ul class="nav-list">
+            <li><a href="#configuration">Configuration</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section id="overview" class="section">
+        <h1>Clerk.io Improved Facets</h1>
+        <p class="subtitle">Enhanced facet components featuring Box View Facets, Price Range Slider, Stock Toggle, and Multi-Currency Support.</p>
+
+        <div class="note warning">
+          <div class="note-title">Local Server Required</div>
+          <p>This documentation loads source files dynamically. Please serve via a local HTTP server (e.g., VS Code Live Server) for code blocks to load correctly.</p>
+        </div>
+
+        <div id="features" class="features">
+          <div class="feature-card">
+            <h4><span class="feature-icon purple">◻</span> Box View Facets</h4>
+            <p>Display facet options as clickable boxes instead of checkboxes.</p>
+          </div>
+          <div class="feature-card">
+            <h4><span class="feature-icon green">↕</span> Dynamic Collapsing</h4>
+            <p>Automatically collapse box views with configurable row counts.</p>
+          </div>
+          <div class="feature-card">
+            <h4><span class="feature-icon yellow">⇔</span> Price Range Slider</h4>
+            <p>Interactive dual-handle slider for price filtering.</p>
+          </div>
+          <div class="feature-card">
+            <h4><span class="feature-icon green">⚡</span> Stock Toggle</h4>
+            <p>Simple on/off switch to filter by stock availability.</p>
+          </div>
+          <div class="feature-card">
+            <h4><span class="feature-icon purple">💱</span> Multi-Currency</h4>
+            <p>Optional Shopify currency conversion support.</p>
+          </div>
+          <div class="feature-card">
+            <h4><span class="feature-icon yellow">📱</span> Fully Responsive</h4>
+            <p>Works seamlessly on desktop, tablet, and mobile.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="file-structure" class="section">
+        <h2>File Structure</h2>
+        <div class="file-tree">
+          <ul>
+            <li><span class="folder">📁 Improved Facets/</span>
+              <ul>
+                <li>📄 README.md</li>
+                <li><span class="folder">📁 docs/</span>
+                  <ul><li>📄 index.html <em style="color: var(--text-muted);">← You are here</em></li></ul>
+                </li>
+                <li><span class="folder">📁 src/</span>
+                  <ul>
+                    <li>📄 config.liquid</li>
+                    <li>📄 facets.html</li>
+                    <li>📄 facets.css</li>
+                    <li>📄 facets.js</li>
+                    <li>📄 facets-price-range.js</li>
+                    <li>📄 stock-toggle.html</li>
+                    <li>📄 stock-toggle.js</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="step-1" class="section">
+        <h2>Installation</h2>
+        
+        <div class="step">
+          <div class="step-header">
+            <span class="step-number">1</span>
+            <span class="step-title">Add Configuration Variables</span>
+            <span class="step-location">Omnisearch (top)</span>
+          </div>
+          <p>Add these Liquid variables at the top of your Omnisearch design.</p>
+          
+          <div class="code-block" data-src="../src/config.liquid">
+            <div class="code-header">
+              <span class="code-filename">📄 config.liquid</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <div class="code-content"><pre><code class="loading">Loading...</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="step-2" class="section">
+        <div class="step">
+          <div class="step-header">
+            <span class="step-number">2</span>
+            <span class="step-title">Update HTML Template</span>
+            <span class="step-location">FacetsHTML</span>
+          </div>
+          <p>Replace your facet group loop with this code.</p>
+          
+          <div class="code-block" data-src="../src/facets.html">
+            <div class="code-header">
+              <span class="code-filename">📄 facets.html</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <div class="code-content"><pre><code class="loading">Loading...</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="step-3" class="section">
+        <div class="step">
+          <div class="step-header">
+            <span class="step-number">3</span>
+            <span class="step-title">Add CSS Styles</span>
+            <span class="step-location">Design CSS</span>
+          </div>
+          <p>Add these styles to your design's stylesheet.</p>
+          
+          <div class="code-block" data-src="../src/facets.css">
+            <div class="code-header">
+              <span class="code-filename">📄 facets.css</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <div class="code-content"><pre><code class="loading">Loading...</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="step-4" class="section">
+        <div class="step">
+          <div class="step-header">
+            <span class="step-number">4</span>
+            <span class="step-title">Add JavaScript</span>
+            <span class="step-location">FacetJSWrapper subdesign</span>
+          </div>
+          <p>Add this JavaScript to your <strong>FacetJSWrapper</strong> subdesign. Wrap in <code>&lt;script&gt;</code> tags.</p>
+          
+          <div class="code-block" data-src="../src/facets.js">
+            <div class="code-header">
+              <span class="code-filename">📄 facets.js</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <div class="code-content"><pre><code class="loading">Loading...</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="step-5" class="section">
+        <div class="step">
+          <div class="step-header">
+            <span class="step-number">5</span>
+            <span class="step-title">Add Price Range Script</span>
+            <span class="step-location">FacetPriceRange subdesign</span>
+          </div>
+          <p>If <code>show_price_slider</code> is enabled, create a <strong>FacetPriceRange</strong> subdesign with this code.</p>
+          
+          <div class="note">
+            <div class="note-title">Setup</div>
+            <p>Include <code>@FacetPriceRange</code> in your Omnisearch HTML <strong>above</strong> <code>@FacetJSWrapper</code>.</p>
+          </div>
+          
+          <div class="code-block" data-src="../src/facets-price-range.js">
+            <div class="code-header">
+              <span class="code-filename">📄 facets-price-range.js</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <div class="code-content"><pre><code class="loading">Loading...</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="step-6" class="section">
+        <div class="step">
+          <div class="step-header">
+            <span class="step-number">6</span>
+            <span class="step-title">Add Stock Toggle</span>
+            <span class="step-location">FacetStockToggle subdesign</span>
+          </div>
+          <p>If <code>show_stock_toggle</code> is enabled, add the HTML to your facets container and create a <strong>FacetStockToggle</strong> subdesign.</p>
+          
+          <div class="note warning">
+            <div class="note-title">Prerequisite: Create stock_status Attribute</div>
+            <p>If your store doesn't have a <code>stock_status</code> attribute, create one using <strong>Modifiers</strong> in My Clerk (Data → Modifiers). <a href="https://help.clerk.io/platform/data/modifiers/" target="_blank" style="color: #92400e;">Learn more about Modifiers</a></p>
+          </div>
+
+          <table class="config-table" style="margin-bottom: 1.5rem;">
+            <thead>
+              <tr><th>Type</th><th>Attribute</th><th>New Value</th><th>Condition</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Create new attribute</td>
+                <td><code>stock_status</code></td>
+                <td><code>instock</code></td>
+                <td><code>stock > 0</code></td>
+              </tr>
+              <tr>
+                <td>Create new attribute</td>
+                <td><code>stock_status</code></td>
+                <td><code>outofstock</code></td>
+                <td><code>stock < 1</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">After saving and running the modifiers, the <code>stock_status</code> attribute will be available as a facet. If your store uses different attribute names or values, update the configuration variables accordingly.</p>
+          
+          <div class="note">
+            <div class="note-title">Setup</div>
+            <p>Add the HTML inside your facets container (typically at the top, before the facet groups). Include <code>@FacetStockToggle</code> in your Omnisearch HTML.</p>
+          </div>
+
+          <h3 style="margin-top: 1.5rem;">Stock Toggle HTML</h3>
+          <div class="code-block" data-src="../src/stock-toggle.html">
+            <div class="code-header">
+              <span class="code-filename">📄 stock-toggle.html</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <div class="code-content"><pre><code class="loading">Loading...</code></pre></div>
+          </div>
+
+          <h3>Stock Toggle JavaScript</h3>
+          <div class="code-block" data-src="../src/stock-toggle.js">
+            <div class="code-header">
+              <span class="code-filename">📄 stock-toggle.js</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <div class="code-content"><pre><code class="loading">Loading...</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="configuration" class="section">
+        <h2>Configuration Reference</h2>
+        
+        <h3>Box View Settings</h3>
+        <table class="config-table">
+          <thead>
+            <tr><th>Variable</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>facet_box_attributes</code></td>
+              <td><span class="badge badge-string">String</span></td>
+              <td><code>""</code></td>
+              <td>Comma-separated attribute names for box view</td>
+            </tr>
+            <tr>
+              <td><code>facet_box_rows</code></td>
+              <td><span class="badge badge-number">Number</span></td>
+              <td><code>2</code></td>
+              <td>Rows to show before "Show more"</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Price Slider Settings</h3>
+        <table class="config-table">
+          <thead>
+            <tr><th>Variable</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>show_price_slider</code></td>
+              <td><span class="badge badge-boolean">Boolean</span></td>
+              <td><code>false</code></td>
+              <td>Enable price range slider</td>
+            </tr>
+            <tr>
+              <td><code>use_currency_converter</code></td>
+              <td><span class="badge badge-boolean">Boolean</span></td>
+              <td><code>false</code></td>
+              <td>Enable Shopify multi-currency conversion</td>
+            </tr>
+            <tr>
+              <td><code>currency_symbol_before</code></td>
+              <td><span class="badge badge-boolean">Boolean</span></td>
+              <td><code>false</code></td>
+              <td><code>true</code> = $100, <code>false</code> = 100$</td>
+            </tr>
+            <tr>
+              <td><code>product_currency_separator</code></td>
+              <td><span class="badge badge-string">String</span></td>
+              <td><code>" "</code></td>
+              <td>Thousands separator (e.g., " ", ".", ",")</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Stock Toggle Settings</h3>
+        <table class="config-table">
+          <thead>
+            <tr><th>Variable</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>show_stock_toggle</code></td>
+              <td><span class="badge badge-boolean">Boolean</span></td>
+              <td><code>false</code></td>
+              <td>Enable stock status toggle</td>
+            </tr>
+            <tr>
+              <td><code>stock_facet_name</code></td>
+              <td><span class="badge badge-string">String</span></td>
+              <td><code>"stock_status"</code></td>
+              <td>The facet attribute name for stock</td>
+            </tr>
+            <tr>
+              <td><code>stock_value_instock</code></td>
+              <td><span class="badge badge-string">String</span></td>
+              <td><code>"instock"</code></td>
+              <td>Value for in-stock products</td>
+            </tr>
+            <tr>
+              <td><code>stock_value_outofstock</code></td>
+              <td><span class="badge badge-string">String</span></td>
+              <td><code>"outofstock"</code></td>
+              <td>Value for out-of-stock products</td>
+            </tr>
+            <tr>
+              <td><code>stock_label_instock</code></td>
+              <td><span class="badge badge-string">String</span></td>
+              <td><code>"In stock"</code></td>
+              <td>Display label when showing in-stock</td>
+            </tr>
+            <tr>
+              <td><code>stock_label_outofstock</code></td>
+              <td><span class="badge badge-string">String</span></td>
+              <td><code>"Out of stock"</code></td>
+              <td>Display label when showing out-of-stock</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Multi-Currency Support</h3>
+        <p>When <code>use_currency_converter</code> is enabled:</p>
+        <ul style="margin-bottom: 1rem; color: var(--text-secondary);">
+          <li><strong>Symbol:</strong> Uses Clerk's <code>{{ currency_symbol }}</code> global</li>
+          <li><strong>Rate:</strong> Uses <code>Shopify.currency.rate</code></li>
+          <li><strong>Fallback:</strong> Safely defaults to static values on non-Shopify stores</li>
+        </ul>
+
+        <h3>Stock Toggle CSS Variables</h3>
+        <p>The stock toggle uses these CSS variables (set in your theme):</p>
+        <table class="config-table">
+          <thead>
+            <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--primary-background-color</code></td>
+              <td><code>#2c5aa0</code></td>
+              <td>Toggle active (ON) color</td>
+            </tr>
+            <tr>
+              <td><code>--background-grey</code></td>
+              <td><code>#ccc</code></td>
+              <td>Toggle inactive (OFF) color</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>Built for <a href="https://clerk.io" target="_blank">Clerk.io</a> Omnisearch designs</p>
+  </footer>
+
+  <script>
+    async function loadSourceFiles() {
+      const codeBlocks = document.querySelectorAll('.code-block[data-src]');
+      for (const block of codeBlocks) {
+        const src = block.getAttribute('data-src');
+        const codeElement = block.querySelector('code');
+        try {
+          const response = await fetch(src);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          codeElement.classList.remove('loading');
+          codeElement.textContent = await response.text();
+        } catch (error) {
+          codeElement.classList.remove('loading');
+          codeElement.classList.add('error');
+          codeElement.textContent = `Failed to load ${src}\n\nServe via local HTTP server:\n- VS Code: Live Server extension\n- Python: python -m http.server`;
+        }
+      }
+    }
+    document.addEventListener('DOMContentLoaded', loadSourceFiles);
+
+    function copyCode(button) {
+      const text = button.closest('.code-block').querySelector('pre').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        button.classList.add('copied');
+        button.textContent = 'Copied!';
+        setTimeout(() => { button.classList.remove('copied'); button.textContent = 'Copy'; }, 2000);
+      });
+    }
+
+    document.querySelectorAll('.nav-list a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelector(link.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+        document.querySelectorAll('.nav-list a').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

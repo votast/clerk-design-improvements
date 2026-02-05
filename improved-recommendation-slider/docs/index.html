@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved Recommendation Slider - Demo</title>
+    <style>
+        /* Demo page styles */
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { text-align: center; margin-bottom: 40px; }
+        
+        /* ===========================================
+           SLIDER CSS (from src/slider.css)
+           =========================================== */
+        
+        .irs-container {
+            --irs-cards-desktop: 4;
+            --irs-cards-tablet: 3;
+            --irs-cards-mobile: 2;
+            --irs-gap: 20px;
+            --irs-card-width: calc((100% - (var(--irs-cards-desktop) - 1) * var(--irs-gap)) / var(--irs-cards-desktop));
+            --irs-text: #333;
+            --irs-text-muted: #666;
+            --irs-price-sale: #c00;
+            --irs-border: #ddd;
+            --irs-bg: #fff;
+            position: relative;
+            width: 100%;
+        }
+
+        .irs-header { text-align: center; margin-bottom: 24px; }
+        .irs-title { font-size: 28px; font-weight: 400; color: var(--irs-text); margin: 0; }
+        .irs-subtitle { font-size: 16px; color: var(--irs-text-muted); margin: 8px 0 0; }
+
+        .irs-viewport { position: relative; display: flex; align-items: stretch; }
+
+        .irs-track {
+            display: flex;
+            gap: var(--irs-gap);
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex: 1;
+            padding: 4px 0 12px;
+        }
+        .irs-track::-webkit-scrollbar { display: none; }
+
+        .irs-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-80%);
+            z-index: 10;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--irs-bg);
+            border: 1px solid var(--irs-border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .irs-arrow svg {
+            width: 12px;
+            height: 18px;
+            stroke: var(--irs-text);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            flex-shrink: 0;
+        }
+        .irs-arrow:hover { background: var(--irs-text); border-color: var(--irs-text); }
+        .irs-arrow:hover svg { stroke: var(--irs-bg); }
+        .irs-arrow-prev { left: 0; }
+        .irs-arrow-next { right: 0; }
+        .irs-arrow.irs-arrow-disabled { opacity: 0.35; cursor: not-allowed; }
+        .irs-arrow.irs-arrow-disabled:hover { background: var(--irs-bg); border-color: var(--irs-border); }
+        .irs-arrow.irs-arrow-disabled:hover svg { stroke: var(--irs-text); }
+
+        .irs-progress { display: none; }
+
+        /* Card wrapper - handles sizing */
+        .irs-card {
+            flex: 0 0 var(--irs-card-width);
+            min-width: 180px;
+            scroll-snap-align: start;
+        }
+
+        /* Card content - can be replaced */
+        .irs-card-content { height: 100%; background: var(--irs-bg); }
+        .irs-card-image { display: block; position: relative; aspect-ratio: 1; background: #f5f5f5; overflow: hidden; }
+        .irs-card-image img { width: 100%; height: 100%; object-fit: contain; }
+        .irs-badge { position: absolute; padding: 4px 10px; font-size: 13px; font-weight: 500; color: #fff; }
+        .irs-badge-sale { top: 10px; right: 0; background: var(--irs-price-sale); }
+        .irs-card-info { padding: 8px 0 0 0; }
+        .irs-card-name { font-size: 14px; font-weight: 500; line-height: 1.4; margin: 0 0 6px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+        .irs-card-name a { color: var(--irs-text); text-decoration: none; }
+        .irs-card-price { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .irs-price-regular { font-size: 15px; font-weight: 600; color: var(--irs-text); }
+        .irs-price-old { font-size: 14px; color: var(--irs-text-muted); text-decoration: line-through; }
+        .irs-price-sale { font-size: 15px; font-weight: 600; color: var(--irs-price-sale); }
+
+        @media (max-width: 1024px) {
+            .irs-container { --irs-card-width: calc((100% - (var(--irs-cards-tablet) - 1) * var(--irs-gap)) / var(--irs-cards-tablet)); }
+        }
+
+        @media (max-width: 768px) {
+            .irs-container { --irs-card-width: calc((100% - (var(--irs-cards-mobile) - 1) * var(--irs-gap)) / var(--irs-cards-mobile)); --irs-gap: 12px; }
+            .irs-title { font-size: 24px; }
+            .irs-arrow { display: none; }
+            .irs-progress { display: block; padding: 12px 0 0; }
+            .irs-progress-track { height: 4px; background: #e5e5e5; border-radius: 2px; position: relative; }
+            .irs-progress-thumb { position: absolute; top: 0; left: 0; width: 25%; height: 100%; background: var(--irs-text); border-radius: 2px; transition: left 0.15s ease-out; }
+        }
+
+        @media (max-width: 480px) {
+            .irs-container { --irs-card-width: 80%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Improved Recommendation Slider - Demo</h1>
+        
+        <!-- Configure: --irs-cards-desktop, --irs-cards-tablet, --irs-cards-mobile -->
+        <div class="irs-container" style="--irs-cards-desktop:4;--irs-cards-tablet:3;--irs-cards-mobile:2;">
+            <div class="irs-header">
+                <h2 class="irs-title">Recommended Products</h2>
+                <p class="irs-subtitle">Based on your interests</p>
+            </div>
+            
+            <div class="irs-viewport">
+                <button type="button" class="irs-arrow irs-arrow-prev" onclick="if(!this.classList.contains('irs-arrow-disabled')){this.nextElementSibling.scrollBy({left:-this.nextElementSibling.offsetWidth/4,behavior:'smooth'})}">
+                    <svg viewBox="0 0 8 14"><path d="M7 1L1 7L7 13"/></svg>
+                </button>
+                
+                <div class="irs-track">
+                    <!-- Product 1 -->
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image">
+                                <img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+1" alt="Product 1">
+                            </a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product One</a></h3>
+                                <div class="irs-card-price">
+                                    <span class="irs-price-regular">299,00 kr</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <!-- Product 2 (with sale) -->
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image">
+                                <img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+2" alt="Product 2">
+                                <span class="irs-badge irs-badge-sale">-25%</span>
+                            </a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product Two With Longer Name</a></h3>
+                                <div class="irs-card-price">
+                                    <span class="irs-price-old">399,00 kr</span>
+                                    <span class="irs-price-sale">299,00 kr</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <!-- Products 3-8 -->
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image"><img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+3" alt="Product 3"></a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product Three</a></h3>
+                                <div class="irs-card-price"><span class="irs-price-regular">149,00 kr</span></div>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image"><img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+4" alt="Product 4"></a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product Four</a></h3>
+                                <div class="irs-card-price"><span class="irs-price-regular">599,00 kr</span></div>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image">
+                                <img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+5" alt="Product 5">
+                                <span class="irs-badge irs-badge-sale">-15%</span>
+                            </a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product Five</a></h3>
+                                <div class="irs-card-price">
+                                    <span class="irs-price-old">199,00 kr</span>
+                                    <span class="irs-price-sale">169,00 kr</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image"><img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+6" alt="Product 6"></a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product Six</a></h3>
+                                <div class="irs-card-price"><span class="irs-price-regular">449,00 kr</span></div>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image"><img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+7" alt="Product 7"></a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product Seven</a></h3>
+                                <div class="irs-card-price"><span class="irs-price-regular">799,00 kr</span></div>
+                            </div>
+                        </article>
+                    </div>
+                    
+                    <div class="irs-card">
+                        <article class="irs-card-content">
+                            <a href="#" class="irs-card-image"><img src="https://via.placeholder.com/300x300/f5f5f5/999?text=Product+8" alt="Product 8"></a>
+                            <div class="irs-card-info">
+                                <h3 class="irs-card-name"><a href="#">Sample Product Eight</a></h3>
+                                <div class="irs-card-price"><span class="irs-price-regular">249,00 kr</span></div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                
+                <button type="button" class="irs-arrow irs-arrow-next" onclick="if(!this.classList.contains('irs-arrow-disabled')){this.previousElementSibling.scrollBy({left:this.previousElementSibling.offsetWidth/4,behavior:'smooth'})}">
+                    <svg viewBox="0 0 8 14"><path d="M1 1L7 7L1 13"/></svg>
+                </button>
+            </div>
+            
+            <div class="irs-progress">
+                <div class="irs-progress-track">
+                    <div class="irs-progress-thumb"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    (function(){
+        var c = document.querySelector('.irs-container:not([data-init])');
+        if (!c) return;
+        c.dataset.init = '1';
+        
+        var track = c.querySelector('.irs-track');
+        var thumb = c.querySelector('.irs-progress-thumb');
+        var prev = c.querySelector('.irs-arrow-prev');
+        var next = c.querySelector('.irs-arrow-next');
+        
+        function update() {
+            var sl = track.scrollLeft;
+            var max = track.scrollWidth - track.clientWidth;
+            if (prev) prev.classList.toggle('irs-arrow-disabled', sl < 5);
+            if (next) next.classList.toggle('irs-arrow-disabled', sl > max - 5);
+            if (thumb && max > 0) thumb.style.left = (sl / max * 75) + '%';
+        }
+        
+        track.addEventListener('scroll', update, {passive: true});
+        track.addEventListener('touchmove', update, {passive: true});
+        setTimeout(update, 100);
+    })();
+    </script>
+</body>
+</html>
