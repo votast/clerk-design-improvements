@@ -6,7 +6,7 @@ A collection of enhanced design components for Clerk.io Omnisearch and product r
 
 ## Improved Facets
 
-Enhanced facet components for Clerk.io Omnisearch, including:
+Enhanced facet components for Omnisearch, including:
 
 - **Price Range Slider** - Interactive dual-handle slider for price filtering with currency conversion support
 - **Stock Toggle** - Toggle switch for filtering in-stock/out-of-stock products
@@ -16,7 +16,7 @@ Enhanced facet components for Clerk.io Omnisearch, including:
 
 ## Improved Recommendation Slider
 
-Enhanced product recommendation slider with improved navigation and responsive design.
+Enhanced Recommendation slider with improved navigation and responsive design.
 
 - **Configurable cards per row** via simple Liquid variables
 - **Desktop arrow navigation** with smooth scrolling
