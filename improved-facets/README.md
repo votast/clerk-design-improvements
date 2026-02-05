@@ -1,6 +1,6 @@
 # Clerk.io Improved Facets
 
-Enhanced facet components for Clerk.io Omnisearch designs featuring **Box View Facets**, an interactive **Price Range Slider**, and a **Stock Toggle** filter.
+Enhanced facet components for Omnisearch designs featuring **Box View Facets**, an interactive **Price Range Slider**, and a **Stock Toggle** filter.
 
 ## Features
 
