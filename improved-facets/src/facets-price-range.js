@@ -58,6 +58,10 @@ Clerk("on", "rendered", function() {
       this.userSelectedMin = null; // User's actual price selection
       this.userSelectedMax = null;
       this.userHasSelection = false; // Track if user has made a selection
+      
+      // Bubble update batching (for smoother mobile performance)
+      this.pendingBubbleUpdate = false;
+      this.pendingBubbleValues = null;
     }
 
     findElements() {
@@ -66,6 +70,9 @@ Clerk("on", "rendered", function() {
       this.track = document.getElementById("priceTrack");
       this.minLabel = document.getElementById("minLabel");
       this.maxLabel = document.getElementById("maxLabel");
+      this.minBubble = document.getElementById("minBubble");
+      this.maxBubble = document.getElementById("maxBubble");
+      this.sliderContainer = document.querySelector(".price-range-slider");
       this.ticksContainer = document.getElementById("priceTicks");
       return this.minSlider && this.maxSlider && this.minLabel && this.maxLabel;
     }
@@ -298,6 +305,9 @@ Clerk("on", "rendered", function() {
 
       // Update visual track
       this.updateTrack(minVal, maxVal);
+      
+      // Update bubble positions
+      this.updateBubbles(minVal, maxVal);
     }
 
     updateTrack(minVal, maxVal) {
@@ -309,6 +319,101 @@ Clerk("on", "rendered", function() {
       const right = ((maxVal - this.absoluteMin) / total) * 100;
       this.track.style.left = left + "%";
       this.track.style.width = (right - left) + "%";
+    }
+
+    updateBubbles(minVal, maxVal) {
+      // Use requestAnimationFrame to batch updates and reduce jank on mobile
+      if (this.pendingBubbleUpdate) {
+        this.pendingBubbleValues = { minVal, maxVal };
+        return;
+      }
+      
+      this.pendingBubbleUpdate = true;
+      this.pendingBubbleValues = { minVal, maxVal };
+      
+      requestAnimationFrame(() => {
+        this.pendingBubbleUpdate = false;
+        const { minVal: min, maxVal: max } = this.pendingBubbleValues;
+        this.applyBubblePositions(min, max);
+      });
+    }
+    
+    applyBubblePositions(minVal, maxVal) {
+      if (!this.minBubble || !this.maxBubble || !this.sliderContainer) return;
+      
+      const total = this.sliderMax - this.absoluteMin;
+      if (total <= 0) return;
+      
+      const sliderWidth = this.sliderContainer.offsetWidth;
+      
+      // If container hasn't rendered yet, retry after a short delay
+      if (sliderWidth <= 0) {
+        setTimeout(() => this.applyBubblePositions(minVal, maxVal), 50);
+        return;
+      }
+      
+      const minPercent = (minVal - this.absoluteMin) / total;
+      const maxPercent = (maxVal - this.absoluteMin) / total;
+      const minPos = minPercent * sliderWidth;
+      const maxPos = maxPercent * sliderWidth;
+      
+      // Format the values for display
+      const minText = formatPriceWithSymbol(minVal);
+      let maxText = formatPriceWithSymbol(maxVal);
+      if (this.hasOpenEnded && maxVal > this.absoluteMax) {
+        maxText = formatPriceWithSymbol(this.absoluteMax, '+');
+      }
+      
+      // Check if bubbles would overlap (within ~80px of each other)
+      const distance = maxPos - minPos;
+      const shouldCombine = distance < 80;
+      
+      if (shouldCombine) {
+        // === COMBINED MODE: Single bubble with both values ===
+        const centerPos = (minPos + maxPos) / 2;
+        const centerPercent = (minPercent + maxPercent) / 2;
+        
+        // Position and content
+        this.minBubble.style.left = centerPos + 'px';
+        this.minLabel.textContent = minText + ' - ' + maxText;
+        
+        // Edge alignment for combined bubble
+        this.minBubble.classList.remove('bubble-left', 'bubble-right');
+        if (centerPercent <= 0.15) {
+          this.minBubble.classList.add('bubble-left');
+        } else if (centerPercent >= 0.85) {
+          this.minBubble.classList.add('bubble-right');
+        }
+        
+        // Hide max bubble
+        this.maxBubble.classList.add('bubble-hidden');
+        
+      } else {
+        // === SEPARATE MODE: Two individual bubbles ===
+        
+        // Position both bubbles
+        this.minBubble.style.left = minPos + 'px';
+        this.maxBubble.style.left = maxPos + 'px';
+        
+        // Update text content
+        this.minLabel.textContent = minText;
+        this.maxLabel.textContent = maxText;
+        
+        // Show max bubble
+        this.maxBubble.classList.remove('bubble-hidden');
+        
+        // Edge alignment for min bubble (left edge)
+        this.minBubble.classList.remove('bubble-left', 'bubble-right');
+        if (minPercent <= 0.15) {
+          this.minBubble.classList.add('bubble-left');
+        }
+        
+        // Edge alignment for max bubble (right edge)
+        this.maxBubble.classList.remove('bubble-left', 'bubble-right');
+        if (maxPercent >= 0.85) {
+          this.maxBubble.classList.add('bubble-right');
+        }
+      }
     }
 
     triggerClerkSearch() {
@@ -357,6 +462,9 @@ Clerk("on", "rendered", function() {
       this.minSlider.value = this.absoluteMin;
       this.maxSlider.value = this.sliderMax;
       this.updateRange();
+      
+      // Force immediate bubble update to ensure correct edge positioning
+      this.applyBubblePositions(this.absoluteMin, this.sliderMax);
     }
   }
 

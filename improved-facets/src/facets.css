@@ -119,26 +119,60 @@
     overflow: visible !important;
 }
 
-/* Value labels */
+/* Hide old fixed value labels (now using bubbles) */
 .price-range-values {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin: 0 0 0.5rem 0 !important;
-    font-size: 0.875rem !important;
-    color: var(--primary-background-color) !important;
+    display: none !important;
 }
 
-.price-range-values span {
-    white-space: nowrap !important;
-}
-
-/* Slider container */
+/* Slider container - extra top margin for bubbles */
 .price-range-slider {
     position: relative !important;
     height: 18px !important;
     overflow: visible !important;
-    margin: 5px 12px 14px 12px !important;
+    margin: 38px 12px 14px 12px !important;
+}
+
+/******************************
+    Price Bubble Labels
+*******************************/
+
+.price-bubble {
+    position: absolute !important;
+    top: -30px !important;
+    transform: translateX(-50%) !important;
+    background: var(--primary-background-color, #2c5aa0) !important;
+    color: var(--secondary-background-color, #ffffff) !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    z-index: 10 !important;
+    pointer-events: none !important;
+}
+
+/* Ensure span inside bubble inherits color */
+.price-bubble span,
+.price-bubble #minLabel,
+.price-bubble #maxLabel {
+    color: inherit !important;
+}
+
+/* Right edge alignment */
+.price-bubble.bubble-right {
+    transform: translateX(-100%) !important;
+    margin-left: 9px !important;
+}
+
+/* Left edge alignment */
+.price-bubble.bubble-left {
+    transform: translateX(0%) !important;
+    margin-left: -9px !important;
+}
+
+/* Hidden state for overlap */
+.price-bubble.bubble-hidden {
+    display: none !important;
 }
 
 /* Background track (grey line) */
@@ -240,25 +274,41 @@
     -webkit-appearance: none !important;
     width: 18px !important;
     height: 18px !important;
-    background: var(--primary-background-color) !important;
-    border: 2px solid #fff !important;
+    background: #fff !important;
+    border: 2px solid #bbb !important;
     border-radius: 50% !important;
     cursor: pointer !important;
     pointer-events: auto !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: none !important;
     margin-top: -6px !important;
+}
+
+.price-range-input::-webkit-slider-thumb:hover {
+    border-color: #999 !important;
+}
+
+.price-range-input::-webkit-slider-thumb:active {
+    border-color: var(--primary-background-color, #2c5aa0) !important;
 }
 
 /* Thumb - Firefox */
 .price-range-input::-moz-range-thumb {
     width: 18px !important;
     height: 18px !important;
-    background: var(--primary-background-color) !important;
-    border: 2px solid #fff !important;
+    background: #fff !important;
+    border: 2px solid #bbb !important;
     border-radius: 50% !important;
     cursor: pointer !important;
     pointer-events: auto !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: none !important;
+}
+
+.price-range-input::-moz-range-thumb:hover {
+    border-color: #999 !important;
+}
+
+.price-range-input::-moz-range-thumb:active {
+    border-color: var(--primary-background-color, #2c5aa0) !important;
 }
 
 /* Tick labels container */

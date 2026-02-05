@@ -16,12 +16,10 @@
     {% if facet_group.name == '_price_range' and show_price_slider %}
       <!-- Price Range Slider -->
       <div class="price-range-container">
-        <div class="price-range-values">
-          <span id="minLabel"></span>
-          <span id="maxLabel"></span>
-        </div>
         <div class="price-range-slider">
           <div class="price-range-track" id="priceTrack"></div>
+          <div class="price-bubble" id="minBubble"><span id="minLabel"></span></div>
+          <div class="price-bubble" id="maxBubble"><span id="maxLabel"></span></div>
           <input type="range" id="minPrice" class="price-range-input" step="1">
           <input type="range" id="maxPrice" class="price-range-input" step="1">
         </div>
