@@ -473,6 +473,9 @@ Clerk("on", "rendered", function() {
     window.priceSliderInstance = new PriceSlider();
   }
   window.priceSliderInstance.init();
+  
+  // Expose formatting function for use by other scripts
+  window.priceSliderInstance.formatPrice = formatPriceWithSymbol;
 
   // Clear all filters handler
   const clearBtns = document.querySelectorAll(".clerk-omnisearch-facet-full-reset");
@@ -540,15 +543,21 @@ Clerk("on", "rendered", function() {
      * Shows format: "min kr - max kr"
      */
     function collapsePriceChips() {
-      const minLabel = document.getElementById("minLabel");
-      const maxLabel = document.getElementById("maxLabel");
       const chips = document.querySelectorAll('.os-facets-snackbar .os-snack[data-facet-group="_price_range"]');
+      const ps = window.priceSliderInstance;
 
-      if (!minLabel || !maxLabel || chips.length === 0) return;
+      if (!ps || !ps.minSlider || chips.length === 0) return;
 
-      // Get current min/max values from slider labels
-      const min = minLabel.textContent.trim();
-      const max = maxLabel.textContent.trim();
+      // Get current min/max values directly from slider (not from labels which may be combined)
+      const minVal = parseInt(ps.minSlider.value);
+      const maxVal = parseInt(ps.maxSlider.value);
+      
+      // Format the values using the exposed formatting function
+      const min = ps.formatPrice(minVal);
+      let max = ps.formatPrice(maxVal);
+      if (ps.hasOpenEnded && maxVal > ps.absoluteMax) {
+        max = ps.formatPrice(ps.absoluteMax, '+');
+      }
       const combined = min + " - " + max;
 
       // Update first chip to show combined range
