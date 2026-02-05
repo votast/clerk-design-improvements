@@ -57,17 +57,3 @@ clerk-design-improvements/
 ## Installation
 
 Each component has its own installation guide. See the individual README files for detailed instructions.
-
-## Requirements
-
-- Clerk.io account with Omnisearch or Recommendations enabled
-- Access to My Clerk design editor
-- Basic understanding of Clerk.io template language
-
-## Support
-
-For questions or issues, contact the Clerk.io support team.
-
----
-
-*Internal use only - Clerk.io*
