@@ -508,6 +508,12 @@
               <td>Enable stock status toggle</td>
             </tr>
             <tr>
+              <td><code>stock_show_all_when_off</code></td>
+              <td><span class="badge badge-boolean">Boolean</span></td>
+              <td><code>false</code></td>
+              <td><code>false</code> = filter to out of stock, <code>true</code> = show all products</td>
+            </tr>
+            <tr>
               <td><code>stock_facet_name</code></td>
               <td><span class="badge badge-string">String</span></td>
               <td><code>"stock_status"</code></td>
@@ -526,19 +532,41 @@
               <td>Value for out-of-stock products</td>
             </tr>
             <tr>
-              <td><code>stock_label_instock</code></td>
+              <td><code>stock_label_on</code></td>
               <td><span class="badge badge-string">String</span></td>
               <td><code>"In stock"</code></td>
-              <td>Display label when showing in-stock</td>
+              <td>Display label when toggle is ON</td>
             </tr>
             <tr>
-              <td><code>stock_label_outofstock</code></td>
+              <td><code>stock_label_off</code></td>
               <td><span class="badge badge-string">String</span></td>
               <td><code>"Out of stock"</code></td>
-              <td>Display label when showing out-of-stock</td>
+              <td>Display label when toggle is OFF</td>
             </tr>
           </tbody>
         </table>
+
+        <h3>Toggle Mode Behavior</h3>
+        <table class="config-table">
+          <thead>
+            <tr><th>Setting</th><th>Toggle ON</th><th>Toggle OFF</th><th>Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>false</code></td>
+              <td>In stock only</td>
+              <td>Out of stock only</td>
+              <td>Help users find discontinued/clearance items</td>
+            </tr>
+            <tr>
+              <td><code>true</code></td>
+              <td>In stock only</td>
+              <td>All products</td>
+              <td>Show everything by default, filter to in-stock</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">When using <code>stock_show_all_when_off = true</code>, remember to also update <code>stock_label_off</code> to something like "All products".</p>
 
         <h3>Multi-Currency Support</h3>
         <p>When <code>use_currency_converter</code> is enabled:</p>

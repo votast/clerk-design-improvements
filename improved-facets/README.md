@@ -84,11 +84,12 @@ If `show_stock_toggle` is enabled:
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
 | `show_stock_toggle` | Boolean | `false` | Enable stock status toggle |
+| `stock_show_all_when_off` | Boolean | `false` | `false` = filter to out of stock, `true` = show all products |
 | `stock_facet_name` | String | `"stock_status"` | The facet attribute name for stock |
 | `stock_value_instock` | String | `"instock"` | Value for in-stock products |
 | `stock_value_outofstock` | String | `"outofstock"` | Value for out-of-stock products |
-| `stock_label_instock` | String | `"In stock"` | Display label when showing in-stock |
-| `stock_label_outofstock` | String | `"Out of stock"` | Display label when showing out-of-stock |
+| `stock_label_on` | String | `"In stock"` | Display label when toggle is ON |
+| `stock_label_off` | String | `"Out of stock"` | Display label when toggle is OFF |
 
 ## Example Configuration
 
@@ -103,11 +104,12 @@ If `show_stock_toggle` is enabled:
 {% assign product_currency_separator = " " %} <!-- thousands separator for price slider -->
 
 {% assign show_stock_toggle = true %} <!-- Boolean: true/false -->
+{% assign stock_show_all_when_off = false %} <!-- Boolean: false = filter to out of stock, true = show all products -->
 {% assign stock_facet_name = "stock_status" %} <!-- The facet attribute name for stock status -->
 {% assign stock_value_instock = "instock" %} <!-- Value for "in stock" products -->
 {% assign stock_value_outofstock = "outofstock" %} <!-- Value for "out of stock" products -->
-{% assign stock_label_instock = "In stock" %} <!-- Display label for in stock -->
-{% assign stock_label_outofstock = "Out of stock" %} <!-- Display label for out of stock -->
+{% assign stock_label_on = "In stock" %} <!-- Display label when toggle is ON -->
+{% assign stock_label_off = "Out of stock" %} <!-- Display label when toggle is OFF (change to "All products" if using stock_show_all_when_off = true) -->
 ```
 
 ## Multi-Currency Support
@@ -154,6 +156,17 @@ The stock toggle provides a simple way to filter products by availability:
 - **Loading overlay** - Shows a spinner while results update
 - **Hides from snackbar** - Stock filter chips are hidden from the active filters display
 
+### Toggle Mode
+
+The `stock_show_all_when_off` setting controls what the secondary toggle state shows:
+
+| Setting | Toggle ON | Toggle OFF | Use Case |
+|---------|-----------|------------|----------|
+| `false` | In stock only | Out of stock only | Help users find discontinued/clearance items |
+| `true` | In stock only | All products | Show everything by default, filter to in-stock |
+
+When using `stock_show_all_when_off = true`, remember to also update `stock_label_off` to something like "All products".
+
 ### CSS Variables
 
 The stock toggle uses these CSS variables (set in your theme):
@@ -166,19 +179,18 @@ The stock toggle uses these CSS variables (set in your theme):
 ## File Structure
 
 ```
-clerk-design-improvements/
-└── improved-facets/
-    ├── README.md
-    ├── docs/
-    │   └── index.html              # Interactive documentation
-    └── src/
-        ├── config.liquid           # Configuration variables
-        ├── facets.html             # FacetsHTML template code
-        ├── facets.css              # Stylesheet
-        ├── facets.js               # JavaScript (for FacetJSWrapper)
-        ├── facets-price-range.js   # Price slider script (for FacetPriceRange)
-        ├── stock-toggle.html       # Stock toggle HTML template
-        └── stock-toggle.js         # Stock toggle script (for FacetStockToggle)
+Improved Facets/
+├── README.md
+├── docs/
+│   └── index.html              # Interactive documentation
+└── src/
+    ├── config.liquid           # Configuration variables
+    ├── facets.html             # FacetsHTML template code
+    ├── facets.css              # Stylesheet
+    ├── facets.js               # JavaScript (for FacetJSWrapper)
+    ├── facets-price-range.js   # Price slider script (for FacetPriceRange)
+    ├── stock-toggle.html       # Stock toggle HTML template
+    └── stock-toggle.js         # Stock toggle script (for StockToggle)
 ```
 
 ## Browser Support

@@ -1,14 +1,15 @@
 {% if show_stock_toggle %}
 <div class="clerk-stock-toggle" 
      data-enabled="{{ show_stock_toggle }}"
+     data-show-all-when-off="{{ stock_show_all_when_off }}"
      data-facet-name="{{ stock_facet_name }}"
      data-value-instock="{{ stock_value_instock }}"
      data-value-outofstock="{{ stock_value_outofstock }}"
-     data-label-instock="{{ stock_label_instock }}" 
-     data-label-outofstock="{{ stock_label_outofstock }}">
+     data-label-on="{{ stock_label_on }}" 
+     data-label-off="{{ stock_label_off }}">
   <label class="clerk-stock-toggle-label">
     <span class="clerk-stock-toggle-switch"></span>
   </label>
-  <span class="clerk-stock-toggle-status">{{ stock_label_instock }}</span>
+  <span class="clerk-stock-toggle-status">{{ stock_label_on }}</span>
 </div>
 {% endif %}

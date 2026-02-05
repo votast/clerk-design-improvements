@@ -38,12 +38,14 @@
       if (!toggleLabel) return;
       
       // Read configuration
+      var showAllAttr = toggleContainer.getAttribute('data-show-all-when-off');
       this.state.config = {
         facetName: toggleContainer.getAttribute('data-facet-name') || 'stock_status',
         valueInstock: toggleContainer.getAttribute('data-value-instock') || 'instock',
         valueOutofstock: toggleContainer.getAttribute('data-value-outofstock') || 'outofstock',
-        labelInstock: toggleContainer.getAttribute('data-label-instock') || 'In stock',
-        labelOutofstock: toggleContainer.getAttribute('data-label-outofstock') || 'Out of stock'
+        labelOn: toggleContainer.getAttribute('data-label-on') || 'In stock',
+        labelOff: toggleContainer.getAttribute('data-label-off') || 'Out of stock',
+        showAllWhenOff: showAllAttr && showAllAttr.trim().toLowerCase() === 'true'
       };
       
       toggleContainer.style.display = '';
@@ -135,23 +137,34 @@
       if (!config) return;
       
       var currentFilter = this.state.filter;
-      var newFilter = currentFilter === config.valueInstock ? config.valueOutofstock : config.valueInstock;
+      var newFilter;
+      
+      // Determine new filter based on showAllWhenOff setting
+      if (config.showAllWhenOff) {
+        // Mode: instock <-> all (no filter)
+        newFilter = currentFilter === config.valueInstock ? 'all' : config.valueInstock;
+      } else {
+        // Mode: instock <-> outofstock (default)
+        newFilter = currentFilter === config.valueInstock ? config.valueOutofstock : config.valueInstock;
+      }
       
       this.state.filter = newFilter;
       this.updateUI();
       this.showOverlay();
       this.state.inProgress = true;
       
-      var currentFacet = this.findFacet(currentFilter);
-      if (currentFacet && currentFacet.classList.contains('clerk-facet-selected')) {
-        currentFacet.click();
-      }
-      
       var self = this;
-      setTimeout(function() {
-        var newFacet = self.findFacet(newFilter);
-        if (newFacet && !newFacet.classList.contains('clerk-facet-selected')) {
-          newFacet.click();
+      
+      if (config.showAllWhenOff && newFilter === 'all') {
+        // Deselect both instock and outofstock facets to show all products
+        var instockFacet = this.findFacet(config.valueInstock);
+        var outofstockFacet = this.findFacet(config.valueOutofstock);
+        
+        if (instockFacet && instockFacet.classList.contains('clerk-facet-selected')) {
+          instockFacet.click();
+        }
+        if (outofstockFacet && outofstockFacet.classList.contains('clerk-facet-selected')) {
+          outofstockFacet.click();
         }
         
         setTimeout(function() {
@@ -160,8 +173,29 @@
           self.updateSnackbar();
           var tc = document.querySelector('.clerk-stock-toggle');
           if (tc) tc.classList.remove('no-transition');
-        }, 400);
-      }, 100);
+        }, 500);
+      } else {
+        // Standard behavior: deselect current, select new
+        var currentFacet = currentFilter === 'all' ? null : this.findFacet(currentFilter);
+        if (currentFacet && currentFacet.classList.contains('clerk-facet-selected')) {
+          currentFacet.click();
+        }
+        
+        setTimeout(function() {
+          var newFacet = self.findFacet(newFilter);
+          if (newFacet && !newFacet.classList.contains('clerk-facet-selected')) {
+            newFacet.click();
+          }
+          
+          setTimeout(function() {
+            self.state.inProgress = false;
+            self.hideOverlay();
+            self.updateSnackbar();
+            var tc = document.querySelector('.clerk-stock-toggle');
+            if (tc) tc.classList.remove('no-transition');
+          }, 400);
+        }, 100);
+      }
     },
     
     // Find a facet element by value
@@ -186,7 +220,8 @@
       var toggleSwitch = document.querySelector('.clerk-stock-toggle-switch');
       var statusText = document.querySelector('.clerk-stock-toggle-status');
       
-      var isOutOfStock = config ? this.state.filter === config.valueOutofstock : this.state.filter === 'outofstock';
+      // Determine if toggle is in "off" state
+      var isOff = this.state.filter !== config.valueInstock;
       
       if ((skipTransition || this.state.inProgress) && toggleContainer) {
         toggleContainer.classList.add('no-transition');
@@ -194,13 +229,13 @@
       
       if (toggleSwitch) {
         toggleSwitch.classList.remove('inactive');
-        if (isOutOfStock) {
+        if (isOff) {
           toggleSwitch.classList.add('inactive');
         }
       }
       
       if (statusText && config) {
-        statusText.textContent = isOutOfStock ? config.labelOutofstock : config.labelInstock;
+        statusText.textContent = isOff ? config.labelOff : config.labelOn;
       }
       
       if (skipTransition && toggleContainer) {
@@ -229,6 +264,15 @@
       var instockSelected = instockFacet.classList.contains('clerk-facet-selected');
       var outofstockSelected = outofstockFacet.classList.contains('clerk-facet-selected');
       var desiredFilter = this.state.filter;
+      
+      // Handle "all" mode - ensure no stock facets are selected
+      if (config.showAllWhenOff && desiredFilter === 'all') {
+        if (instockSelected) instockFacet.click();
+        if (outofstockSelected) outofstockFacet.click();
+        return;
+      }
+      
+      // Standard mode logic
       var correctSelected = desiredFilter === config.valueInstock ? instockSelected : outofstockSelected;
       var wrongSelected = desiredFilter === config.valueInstock ? outofstockSelected : instockSelected;
       

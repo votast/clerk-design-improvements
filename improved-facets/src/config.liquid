@@ -8,8 +8,9 @@
 {% assign product_currency_separator = " " %} <!-- thousands separator for price slider -->
 
 {% assign show_stock_toggle = false %} <!-- Boolean: true/false -->
+{% assign stock_show_all_when_off = false %} <!-- Boolean: false = filter to out of stock, true = show all products -->
 {% assign stock_facet_name = "stock_status" %} <!-- The facet attribute name for stock status -->
 {% assign stock_value_instock = "instock" %} <!-- Value for "in stock" products -->
 {% assign stock_value_outofstock = "outofstock" %} <!-- Value for "out of stock" products -->
-{% assign stock_label_instock = "In stock" %} <!-- Display label for in stock -->
-{% assign stock_label_outofstock = "Out of stock" %} <!-- Display label for out of stock -->
+{% assign stock_label_on = "In stock" %} <!-- Display label when toggle is ON -->
+{% assign stock_label_off = "Out of stock" %} <!-- Display label when toggle is OFF (change to "All products" if using stock_show_all_when_off = true) -->
