@@ -1,6 +1,6 @@
 # Clerk.io Design Improvements
 
-A collection of enhanced design components for Clerk.io Omnisearch and product recommendations.
+A collection of enhanced design components for Omnisearch and Recommendations.
 
 
 
