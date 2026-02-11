@@ -9,10 +9,6 @@ A custom Recommendation slider design with enhanced navigation and mobile experi
 - **Mobile**: Swipe + progress bar indicator
 - **Small Mobile**: Partial card visible (hints at more content)
 
-## Why "irs-" Prefix?
-
-All slider-related classes use the `irs-` prefix (Improved Recommendation Slider) to avoid conflicts with Clerk.js default slider functionality. This allows the custom navigation to work independently.
-
 ## File Structure
 
 ```
